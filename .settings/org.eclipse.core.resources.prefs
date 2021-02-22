@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+encoding//WebContent/WEB-INF/lib/quartz.properties=UTF-8
+encoding//src/com/kt/flyer/batch/common/conf/database.properties=UTF-8
+encoding//src/log4j.properties=UTF-8

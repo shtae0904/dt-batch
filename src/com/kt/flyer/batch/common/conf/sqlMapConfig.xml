@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+		 "http://ibatis.apache.org/dtd/sql-map-config-2.dtd" >
+
+<sqlMapConfig>
+
+	<properties
+		resource="com/kt/flyer/batch/common/conf/database.properties" />
+
+	<!-- wilfly for oracle -->
+	<transactionManager type="JDBC"
+		commitRequired="true">
+		<dataSource type="JNDI">
+			<property name="DBJndiContext" value="${DBJndiContext}" />
+		</dataSource>
+	</transactionManager>
+
+	<sqlMap resource="com/kt/flyer/batch/dao/sql/JobInfo.xml" />
+
+
+</sqlMapConfig>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-web>
+	<context-root>/Batch</context-root>
+	<!-- <replication-config> <replication-granularity>ATTRIBUTE</replication-granularity> 
+		</replication-config> -->
+</jboss-web>

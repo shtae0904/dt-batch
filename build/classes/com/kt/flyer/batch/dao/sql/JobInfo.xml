@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="JobInfo">
+
+    <procedure id="orgUpdate">
+        { call sp_ctfl_update_org }
+    </procedure>
+    
+    <procedure id="cntpntUpdate">
+        {call sp_ctfl_get_cntpnt_from_mdm }
+    </procedure>
+
+    <select id="getOrgPathUpdateSeq" resultClass="java.lang.String">
+        WITH ORG_LATEST_INFO AS (
+                        SELECT MAX(EAI_SEQ) EAI_SEQ
+                        FROM CTFL.TB_CPZ_ORG_BAS
+                        WHERE ACTIVEFLG = 'Y'
+                        GROUP BY DEPTNUM
+                        )
+                      SELECT A.EAI_SEQ EAI_SEQ 
+                        FROM ORG_LATEST_INFO A 
+                        LEFT OUTER JOIN CTFL.TB_CPZ_ORG_PATH B 
+                          ON A.EAI_SEQ = B.EAI_SEQ 
+                       WHERE B.EAI_SEQ IS NULL
+    </select>
+
+    <insert id="orgPathUpdate" parameterClass="java.lang.String">
+        INSERT /*+ APPEND */ INTO CTFL.TB_CPZ_ORG_PATH
+            ( DEPTNUM,
+              NAME,
+              DEPTPATH,
+              EAI_SEQ,
+              TOPDEPTNUM,
+              EAI_UDATE
+             )
+          SELECT   /*+ APPEND */
+                   A.DEPTNUM,
+                   A.NAME,
+                   B.FULL_DEPT,
+                   A.EAI_SEQ,
+                   CASE WHEN  B.TOPDEPTNUM IS NULL THEN 'MISS' ELSE  B.TOPDEPTNUM END AS TOPDEPTNUM,
+                   A.EAI_UDATE   
+                   FROM CTFL.TB_CPZ_ORG_BAS A, CTFL.GET_DEPT_PATH_TOPCODE_FROM_BAS(A.DEPTNUM) B
+                   WHERE A.EAI_SEQ = #EAI_SEQ#
+    </insert>
+    
+    <delete id="orgPathDelete">
+         DELETE FROM CTFL.TB_CPZ_ORG_PATH 
+         WHERE EAI_SEQ IN (
+            SELECT MIN(EAI_SEQ)
+              FROM CTFL.TB_CPZ_ORG_PATH 
+             GROUP BY DEPTNUM
+            HAVING MIN(EAI_UDATE) != MAX(EAI_UDATE)
+            )
+    </delete>
+    
+    <delete id="orgPathDelete2">
+        <!-- DELETE FROM CTFL.TB_CPZ_ORG_PATH 
+         WHERE EAI_SEQ IN (
+            SELECT MIN(EAI_SEQ) FROM CTFL.TB_CPZ_ORG_PATH GROUP BY DEPTNUM HAVING COUNT(DEPTNUM) > 1
+         ) -->
+    </delete>
+    
+</sqlMap>
